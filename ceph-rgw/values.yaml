@@ -18,7 +18,11 @@
 # name: value
 
 deployment:
-  ceph: false
+  storage_secrets: true
+  ceph: true
+  rbd_provisioner: true
+  cephfs_provisioner: false
+  client_secrets: false
 
 release_group: null
 
@@ -218,8 +222,8 @@ network:
     node_port:
       enabled: false
       port: 30004
-  public: 192.168.0.0/16
-  cluster: 192.168.0.0/16
+  public: 192.168.96.0/21
+  cluster: 192.168.96.0/21
 
 conf:
   templates:
@@ -251,7 +255,7 @@ conf:
     target:
       #NOTE(portdirect): arbitrarily we set the default number of expected OSD's to 5
       # to match the number of nodes in the OSH gate.
-      osd: 5
+      osd: 9
       pg_per_osd: 100
     default:
       #NOTE(portdirect): this should be 'same_host' for a single node
@@ -374,6 +378,7 @@ conf:
       debug_ms: "0/0"
       log_file: /dev/stdout
       mon_cluster_log_file: /dev/stdout
+      fsid: "223907ad-9434-43a1-b374-7fff0de13867"
     osd:
       osd_mkfs_type: xfs
       osd_mkfs_options_xfs: -f -i size=2048
@@ -430,7 +435,7 @@ dependencies:
           service: ceph_object_store
 
 bootstrap:
-  enabled: false
+  enabled: true
   script: |
     ceph -s
     function ensure_pool () {
@@ -540,7 +545,7 @@ endpoints:
         default: 8088
         public: 80
   ceph_mon:
-    namespace: null
+    namespace: ceph
     hosts:
       default: ceph-mon
       discovery: ceph-mon-discovery
@@ -592,3 +597,5 @@ manifests:
   service_rgw: true
   helm_tests: true
   network_policy: false
+  deployment_cephfs_provisioner: false
+  job_cephfs_client_key: false  

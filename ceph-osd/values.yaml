@@ -134,8 +134,8 @@ secrets:
     admin: ceph-client-admin-keyring
 
 network:
-  public: 192.168.0.0/16
-  cluster: 192.168.0.0/16
+  public: 192.168.96.0/21
+  cluster: 192.168.96.0/21
 
 jobs:
   ceph_defragosds:
@@ -166,6 +166,7 @@ conf:
       mon_osd_down_out_subtree_limit: root
       mon_osd_min_in_ratio: 0
       mon_osd_min_up_ratio: 0
+      fsid: "223907ad-9434-43a1-b374-7fff0de13867"
     osd:
       osd_mkfs_type: xfs
       osd_mkfs_options_xfs: -f -i size=2048
@@ -193,8 +194,10 @@ conf:
       osd_journal_size: 10240
       osd_crush_update_on_start: false
     target:
-      # This is just for helm tests to proceed the deployment if we have mentioned % of
+      # This is just for helm tests to proceed the  deploymentif we have mentioned % of
+      # yment
       # osds are up and running.
+      osd: 9
       required_percent_of_osds: 75
 
   storage:
@@ -215,16 +218,24 @@ conf:
     # when specifing whole disk (/dev/sdf) for journals, ceph-osd chart will create
     # needed partitions for each OSDs.
     osd:
-      - data:
-          type: directory
-          location: /var/lib/openstack-helm/ceph/osd/osd-one
-        journal:
-          type: directory
-          location: /var/lib/openstack-helm/ceph/osd/journal-one
+            #      - data:
+            #type: directory
+            #location: /var/lib/openstack-helm/ceph/osd/osd-one
+            #journal:
+            #type: directory
+            #location: /var/lib/openstack-helm/ceph/osd/journal-one
 
-      # - data:
-      #     type: bluestore
-      #     location: /dev/sdb
+        - data:
+            type: bluestore
+            location: /dev/vdb
+
+        - data:
+            type: bluestore
+            location: /dev/vdc   
+
+        - data:
+            type: bluestore
+            location: /dev/vdd            
       # Separate block devices may be used for block.db and/or block.wal
       # Without these values they will be co-located on the data volume
       # Specify the location and size in Gb. It is recommended that the
@@ -336,7 +347,7 @@ endpoints:
       registry:
         node: 5000
   ceph_mon:
-    namespace: null
+    namespace: ceph
     hosts:
       default: ceph-mon
       discovery: ceph-mon-discovery
@@ -356,3 +367,5 @@ manifests:
   job_bootstrap: false
   job_image_repo_sync: true
   helm_tests: true
+  deployment_cephfs_provisioner: false
+  job_cephfs_client_key: false
