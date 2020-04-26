@@ -1,0 +1,4 @@
+apiVersion: v1
+description: OpenStack-Helm Ceph RadosGW
+name: ceph-rgw
+version: 0.1.0

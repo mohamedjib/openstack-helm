@@ -1,0 +1,4 @@
+apiVersion: v1
+description: OpenStack-Helm Ceph Client
+name: ceph-client
+version: 0.1.0
