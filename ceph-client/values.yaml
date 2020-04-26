@@ -18,7 +18,11 @@
 # name: value
 
 deployment:
+  storage_secrets: true
   ceph: true
+  rbd_provisioner: true
+  cephfs_provisioner: false
+  client_secrets: false
 
 release_group: null
 
@@ -191,8 +195,8 @@ secrets:
     admin: ceph-client-admin-keyring
 
 network:
-  public: 192.168.0.0/16
-  cluster: 192.168.0.0/16
+  public: 192.168.96.0/21
+  cluster: 192.168.96.0/21
 
 jobs:
   ceph_defragosds:
@@ -237,7 +241,7 @@ conf:
     target:
       #NOTE(portdirect): arbitrarily we set the default number of expected OSD's to 5
       # to match the number of nodes in the OSH gate (used only for helm tests).
-      osd: 5
+      osd: 9
       # This is  just for helm tests to proceed the deployment if  we have mentioned % of
       # osds are up and running.
       required_percent_of_osds: 75
@@ -382,6 +386,7 @@ conf:
       debug_ms: "0/0"
       log_file: /dev/stdout
       mon_cluster_log_file: /dev/stdout
+      fsid: "223907ad-9434-43a1-b374-7fff0de13867"
     osd:
       osd_mkfs_type: xfs
       osd_mkfs_options_xfs: -f -i size=2048
@@ -456,7 +461,7 @@ dependencies:
           service: ceph_mgr
 
 bootstrap:
-  enabled: false
+  enabled: true
   script: |
     ceph -s
     function ensure_pool () {
@@ -515,7 +520,7 @@ endpoints:
       registry:
         node: 5000
   ceph_mon:
-    namespace: null
+    namespace: ceph
     hosts:
       default: ceph-mon
       discovery: ceph-mon-discovery

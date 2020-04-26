@@ -18,8 +18,11 @@
 # name: value
 
 deployment:
-  ceph: true
   storage_secrets: true
+  ceph: true
+  rbd_provisioner: true
+  cephfs_provisioner: false
+  client_secrets: false
 
 images:
   pull_policy: IfNotPresent
@@ -147,8 +150,8 @@ secrets:
     admin: ceph-client-admin-keyring
 
 network:
-  public: 192.168.0.0/16
-  cluster: 192.168.0.0/16
+  public: 192.168.96.0/21
+  cluster: 192.168.96.0/21
 
 conf:
   templates:
@@ -195,6 +198,7 @@ conf:
       mon_data_avail_warn: 15
       log_file: /dev/stdout
       mon_cluster_log_file: /dev/stdout
+      fsid: "223907ad-9434-43a1-b374-7fff0de13867"
     osd:
       osd_mkfs_type: xfs
       osd_mkfs_options_xfs: -f -i size=2048
@@ -260,7 +264,7 @@ dependencies:
           service: local_image_registry
 
 bootstrap:
-  enabled: false
+  enabled: true
   script: |
     ceph -s
     function ensure_pool () {
@@ -295,7 +299,7 @@ storageclass:
       imageFormat: "2"
       imageFeatures: layering
   cephfs:
-    provision_storage_class: true
+    provision_storage_class: false
     provisioner: ceph.com/cephfs
     metadata:
       name: cephfs
@@ -320,7 +324,7 @@ endpoints:
       registry:
         node: 5000
   ceph_mon:
-    namespace: null
+    namespace: ceph
     hosts:
       default: ceph-mon
       discovery: ceph-mon-discovery
@@ -344,3 +348,6 @@ manifests:
   service_mon: true
   service_mon_discovery: true
   job_storage_admin_keys: true
+  deployment_cephfs_provisioner: false
+  job_cephfs_client_key: false
+
