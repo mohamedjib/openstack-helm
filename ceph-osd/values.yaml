@@ -218,24 +218,15 @@ conf:
     # when specifing whole disk (/dev/sdf) for journals, ceph-osd chart will create
     # needed partitions for each OSDs.
     osd:
-            #      - data:
-            #type: directory
-            #location: /var/lib/openstack-helm/ceph/osd/osd-one
-            #journal:
-            #type: directory
-            #location: /var/lib/openstack-helm/ceph/osd/journal-one
-
-        - data:
-            type: bluestore
-            location: /dev/vdb
-
-        - data:
-            type: bluestore
-            location: /dev/vdc   
-
-        - data:
-            type: bluestore
-            location: /dev/vdd            
+      - data:
+          type: bluestore
+          location: /dev/vdb
+      - data:
+          type: bluestore
+          location: /dev/vdc   
+      - data:
+          type: bluestore
+          location: /dev/vdd            
       # Separate block devices may be used for block.db and/or block.wal
       # Without these values they will be co-located on the data volume
       # Specify the location and size in Gb. It is recommended that the
