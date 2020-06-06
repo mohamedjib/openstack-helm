@@ -15,12 +15,13 @@
 # Declare name/value pairs to be passed into your templates.
 # name: value
 
+---
 images:
   tags:
-    db_init: docker.io/openstackhelm/heat:train-ubuntu_bionic
-    db_drop: docker.io/openstackhelm/heat:train-ubuntu_bionic
-    horizon_db_sync: docker.io/openstackhelm/horizon:train-ubuntu_bionic
-    horizon: docker.io/openstackhelm/horizon:train-ubuntu_bionic
+    db_init: docker.io/openstackhelm/heat:stein-ubuntu_bionic
+    horizon_db_sync: docker.io/openstackhelm/horizon:stein-ubuntu_bionic
+    db_drop: docker.io/openstackhelm/heat:stein-ubuntu_bionic
+    horizon: docker.io/openstackhelm/horizon:stein-ubuntu_bionic
     test: docker.io/openstackhelm/osh-selenium:latest-ubuntu_bionic
     dep_check: quay.io/airshipit/kubernetes-entrypoint:v1.0.0
     image_repo_sync: docker.io/docker:17.07.0
@@ -2267,3 +2268,4 @@ manifests:
   secret_keystone: true
   service_ingress: true
   service: true
+...

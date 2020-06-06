@@ -1,6 +1,4 @@
 {{/*
-Copyright 2017 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -30,7 +28,7 @@ metadata:
   annotations:
     "helm.sh/hook": test-success
     {{ tuple $envAll | include "helm-toolkit.snippets.release_uuid" }}
-{{ dict "envAll" $envAll "podName" "mariadb-test" "containerNames" (list "mariadb-mariadb-test") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 4 }}
+{{ dict "envAll" $envAll "podName" "mariadb-test" "containerNames" (list "init" "mariadb-test") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 4 }}
 spec:
   shareProcessNamespace: true
   serviceAccountName: {{ $serviceAccountName }}
@@ -41,7 +39,7 @@ spec:
   initContainers:
 {{ tuple $envAll "tests" list | include "helm-toolkit.snippets.kubernetes_entrypoint_init_container" | indent 8 }}
   containers:
-    - name: {{.Release.Name}}-mariadb-test
+    - name: mariadb-test
 {{ dict "envAll" $envAll "application" "tests" "container" "test" | include "helm-toolkit.snippets.kubernetes_container_security_context" | indent 6 }}
 {{ tuple $envAll "scripted_test" | include "helm-toolkit.snippets.image" | indent 6 }}
       command:

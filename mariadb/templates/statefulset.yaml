@@ -1,6 +1,4 @@
 {{/*
-Copyright 2017 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -101,7 +99,7 @@ spec:
         configmap-etc-hash: {{ tuple "configmap-etc.yaml" . | include "helm-toolkit.utils.hash" }}
         mariadb-dbadmin-password-hash: {{ tuple "secret-dbadmin-password.yaml" . | include "helm-toolkit.utils.hash" }}
         mariadb-sst-password-hash: {{ tuple "secret-dbadmin-password.yaml" . | include "helm-toolkit.utils.hash" }}
-{{ dict "envAll" $envAll "podName" "mariadb-server" "containerNames" (list "mariadb") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
+{{ dict "envAll" $envAll "podName" "mariadb-server" "containerNames" (list "init" "mariadb-perms" "mariadb") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
     spec:
       shareProcessNamespace: true
       serviceAccountName: {{ $serviceAccountName }}
@@ -187,7 +185,7 @@ spec:
               exec:
                 command:
                   - /tmp/stop.sh
-{{ dict "envAll" . "component" "server" "container" "mariadb" "type" "readiness" "probeTemplate" (include "mariadbReadinessProbe" . | fromYaml) | include "helm-toolkit.snippets.kubernetes_probe" | indent 10 -}}
+{{ dict "envAll" . "component" "server" "container" "mariadb" "type" "readiness" "probeTemplate" (include "mariadbReadinessProbe" . | fromYaml) | include "helm-toolkit.snippets.kubernetes_probe" | indent 10 }}
           volumeMounts:
             - name: pod-tmp
               mountPath: /tmp

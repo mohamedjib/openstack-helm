@@ -1,3 +1,4 @@
+---
 pod:
   mandatory_access_control:
     type: apparmor
@@ -10,6 +11,7 @@ pod:
       init: runtime/default
     ceph-bootstrap:
       ceph-bootstrap: runtime/default
+      init: runtime/default
     ceph-storage-keys-generator:
       ceph-storage-keys-generator: runtime/default
       init: runtime/default
@@ -17,3 +19,4 @@ bootstrap:
   enabled: true
 manifests:
   job_bootstrap: true
+...

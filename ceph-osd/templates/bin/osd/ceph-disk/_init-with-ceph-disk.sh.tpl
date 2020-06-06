@@ -1,8 +1,6 @@
 #!/bin/bash
 
 {{/*
-Copyright 2017 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -179,6 +177,12 @@ function osd_disk_prepare {
 
   udev_settle
   ceph-disk -v prepare ${CLI_OPTS}
+
+  if [ ! -z "$DEVICE_CLASS" ]; then
+    local osd_id=$(cat "/var/lib/ceph/osd/*/whoami")
+    ceph osd crush rm-device-class osd."${osd_id}"
+    ceph osd crush set-device-class "${DEVICE_CLASS}" osd."${osd_id}"
+  fi
 }
 
 function osd_journal_create {

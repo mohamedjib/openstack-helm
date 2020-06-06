@@ -1,6 +1,4 @@
 {{/*
-Copyright 2017 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -45,6 +43,7 @@ spec:
   selector:
     matchLabels:
 {{ tuple $envAll "ceph" "rgw" | include "helm-toolkit.snippets.kubernetes_metadata_labels" | indent 6 }}
+{{ tuple $envAll | include "helm-toolkit.snippets.kubernetes_upgrades_deployment" | indent 2 }}
   template:
     metadata:
       labels:
@@ -53,11 +52,13 @@ spec:
         configmap-bin-hash: {{ tuple "configmap-bin.yaml" . | include "helm-toolkit.utils.hash" }}
         configmap-etc-client-hash: {{ tuple "configmap-etc-client.yaml" . | include "helm-toolkit.utils.hash" }}
 {{ tuple $envAll | include "helm-toolkit.snippets.release_uuid" | indent 8 }}
+{{ dict "envAll" $envAll "podName" "ceph-rgw" "containerNames" (list "init" "ceph-rgw" "ceph-init-dirs" "ceph-rgw-init") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
     spec:
 {{ dict "envAll" $envAll "application" "rgw" | include "helm-toolkit.snippets.kubernetes_pod_security_context" | indent 6 }}
       serviceAccountName: {{ $serviceAccountName }}
       affinity:
 {{ tuple $envAll "ceph" "rgw" | include "helm-toolkit.snippets.kubernetes_pod_anti_affinity" | indent 8 }}
+{{ tuple $envAll "rgw" | include "helm-toolkit.snippets.kubernetes_tolerations" | indent 6 }}
       nodeSelector:
         {{ .Values.labels.rgw.node_selector_key }}: {{ .Values.labels.rgw.node_selector_value }}
       initContainers:

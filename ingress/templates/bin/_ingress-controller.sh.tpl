@@ -1,8 +1,6 @@
 #!/bin/bash
 
 {{/*
-Copyright 2017 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -20,7 +18,7 @@ set -ex
 COMMAND="${@:-start}"
 
 function start () {
-  find /tmp/ -maxdepth 1 -writable | grep -v "^/tmp/$" | xargs -L1 -r rm -rfv
+  find /tmp -maxdepth 1 \! -path /tmp -perm /222 -exec rm -rfv {} \;
 
   declare -A desired_opts
   desired_opts["--stream-port"]="${PORT_STREAM}"

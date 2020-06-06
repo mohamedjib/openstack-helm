@@ -1,3 +1,4 @@
+---
 manifests:
   network_policy: true
 network_policy:
@@ -19,9 +20,6 @@ network_policy:
         - podSelector:
             matchLabels:
               application: cinder
-        - podSelector:
-            matchLabels:
-              application: congress
         - podSelector:
             matchLabels:
               application: barbican
@@ -82,3 +80,4 @@ network_policy:
         ports:
           - protocol: TCP
             port: %%%REPLACE_API_PORT%%%
+...

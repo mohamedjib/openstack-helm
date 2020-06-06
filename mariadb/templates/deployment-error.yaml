@@ -1,6 +1,4 @@
 {{/*
-Copyright 2017 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -42,7 +40,7 @@ spec:
 {{ tuple $envAll | include "helm-toolkit.snippets.release_uuid" | indent 8 }}
         configmap-bin-hash: {{ tuple "configmap-bin.yaml" . | include "helm-toolkit.utils.hash" }}
         configmap-etc-hash: {{ tuple "configmap-ingress-etc.yaml" . | include "helm-toolkit.utils.hash" }}
-{{ dict "envAll" $envAll "podName" "mariadb-ingress-error-pages" "containerNames" (list "ingress-error-pages") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
+{{ dict "envAll" $envAll "podName" "mariadb-ingress-error-pages" "containerNames" (list "init" "ingress-error-pages") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
     spec:
       shareProcessNamespace: true
       serviceAccountName: {{ $serviceAccountName }}
@@ -68,27 +66,10 @@ spec:
             timeoutSeconds: 5
           ports:
             - containerPort: 8080
-          command:
-            - /tmp/mariadb-ingress-error-pages.sh
-            - start
-          lifecycle:
-            preStop:
-              exec:
-                command:
-                  - /tmp/mariadb-ingress-error-pages.sh
-                  - stop
           volumeMounts:
             - name: pod-tmp
               mountPath: /tmp
-            - name: ingress-bin
-              mountPath: /tmp/mariadb-ingress-error-pages.sh
-              subPath: mariadb-ingress-error-pages.sh
-              readOnly: true
       volumes:
         - name: pod-tmp
           emptyDir: {}
-        - name: ingress-bin
-          configMap:
-            name: mariadb-bin
-            defaultMode: 0555
 {{- end }}

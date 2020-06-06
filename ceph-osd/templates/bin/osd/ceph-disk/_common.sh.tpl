@@ -1,8 +1,6 @@
 #!/bin/bash
 
 {{/*
-Copyright 2017 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -29,6 +27,7 @@ set -ex
 eval CRUSH_FAILURE_DOMAIN_TYPE=$(cat /etc/ceph/storage.json | python -c 'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["failure_domain"]))')
 eval CRUSH_FAILURE_DOMAIN_NAME=$(cat /etc/ceph/storage.json | python -c 'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["failure_domain_name"]))')
 eval CRUSH_FAILURE_DOMAIN_BY_HOSTNAME=$(cat /etc/ceph/storage.json | python -c 'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["failure_domain_by_hostname"]))')
+eval DEVICE_CLASS=$(cat /etc/ceph/storage.json | python -c 'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["device_class"]))')
 
 if [[ $(ceph -v | egrep -q "nautilus|mimic|luminous"; echo $?) -ne 0 ]]; then
     echo "ERROR- need Luminous/Mimic/Nautilus release"
@@ -97,6 +96,7 @@ function crush_add_and_move {
 }
 
 function crush_location {
+  set_device_class
   if [ "x${CRUSH_FAILURE_DOMAIN_TYPE}" != "xhost" ]; then
     if [ "x${CRUSH_FAILURE_DOMAIN_NAME}" != "xfalse" ]; then
       crush_add_and_move "${CRUSH_FAILURE_DOMAIN_TYPE}" "${CRUSH_FAILURE_DOMAIN_NAME}"
@@ -239,3 +239,18 @@ function udev_settle {
   done
 }
 
+function set_device_class {
+  if [ ! -z "$DEVICE_CLASS" ]; then
+    if [ "x$DEVICE_CLASS" != "x$(get_device_class)" ]; then
+      ceph_cmd_retry --cluster "${CLUSTER}" --name="osd.${OSD_ID}" --keyring="${OSD_KEYRING}" \
+        osd crush rm-device-class "osd.${OSD_ID}"
+      ceph_cmd_retry --cluster "${CLUSTER}" --name="osd.${OSD_ID}" --keyring="${OSD_KEYRING}" \
+        osd crush set-device-class "${DEVICE_CLASS}" "osd.${OSD_ID}"
+    fi
+  fi
+}
+
+function get_device_class {
+  echo $(ceph_cmd_retry --cluster "${CLUSTER}" --name="osd.${OSD_ID}" --keyring="${OSD_KEYRING}" \
+    osd crush get-device-class "osd.${OSD_ID}")
+}

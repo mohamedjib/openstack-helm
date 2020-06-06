@@ -1,8 +1,6 @@
 #!/bin/bash
 
 {{/*
-Copyright 2017 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -29,6 +27,7 @@ set -ex
 eval CRUSH_FAILURE_DOMAIN_TYPE=$(cat /etc/ceph/storage.json | python -c 'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["failure_domain"]))')
 eval CRUSH_FAILURE_DOMAIN_NAME=$(cat /etc/ceph/storage.json | python -c 'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["failure_domain_name"]))')
 eval CRUSH_FAILURE_DOMAIN_BY_HOSTNAME=$(cat /etc/ceph/storage.json | python -c 'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["failure_domain_by_hostname"]))')
+eval DEVICE_CLASS=$(cat /etc/ceph/storage.json | python -c 'import sys, json; data = json.load(sys.stdin); print(json.dumps(data["device_class"]))')
 
 if [[ $(ceph -v | egrep -q "nautilus|mimic|luminous"; echo $?) -ne 0 ]]; then
     echo "ERROR- need Luminous/Mimic/Nautilus release"
@@ -97,6 +96,7 @@ function crush_add_and_move {
 }
 
 function crush_location {
+  set_device_class
   if [ "x${CRUSH_FAILURE_DOMAIN_TYPE}" != "xhost" ]; then
     if [ "x${CRUSH_FAILURE_DOMAIN_NAME}" != "xfalse" ]; then
       crush_add_and_move "${CRUSH_FAILURE_DOMAIN_TYPE}" "${CRUSH_FAILURE_DOMAIN_NAME}"
@@ -251,3 +251,91 @@ function udev_settle {
   done
 }
 
+# Helper function to get an lvm tag from a logical volume
+function get_lvm_tag_from_volume {
+  logical_volume="$1"
+  tag="$2"
+
+  if [[ "$#" -lt 2 ]] || [[ -z "${logical_volume}" ]]; then
+    # Return an empty string if the logical volume doesn't exist
+    echo
+  else
+    # Get and return the specified tag from the logical volume
+    lvs -o lv_tags ${logical_volume} | tr ',' '\n' | grep ${tag} | cut -d'=' -f2
+  fi
+}
+
+# Helper function to get an lvm tag from a physical device
+function get_lvm_tag_from_device {
+  device="$1"
+  tag="$2"
+  # Attempt to get a logical volume for the physical device
+  logical_volume="$(pvdisplay -m ${device} | awk '/Logical volume/{print $3}')"
+
+  # Use get_lvm_tag_from_volume to get the specified tag from the logical volume
+  get_lvm_tag_from_volume ${logical_volume} ${tag}
+}
+
+# Helper function to get a cluster FSID from a physical device
+function get_cluster_fsid_from_device {
+  device="$1"
+
+  # Use get_lvm_tag_from_device to get the cluster FSID from the device
+  get_lvm_tag_from_device ${device} ceph.cluster_fsid
+}
+
+# Helper function to get an OSD ID from a logical volume
+function get_osd_id_from_volume {
+  logical_volume="$1"
+
+  # Use get_lvm_tag_from_volume to get the OSD ID from the logical volume
+  get_lvm_tag_from_volume ${logical_volume} ceph.osd_id
+}
+
+# Helper function get an OSD ID from a physical device
+function get_osd_id_from_device {
+  device="$1"
+
+  # Use get_lvm_tag_from_device to get the OSD ID from the device
+  get_lvm_tag_from_device ${device} ceph.osd_id
+}
+
+# Helper function get an OSD FSID from a physical device
+function get_osd_fsid_from_device {
+  device="$1"
+
+  # Use get_lvm_tag_from_device to get the OSD FSID from the device
+  get_lvm_tag_from_device ${device} ceph.osd_fsid
+}
+
+# Helper function get an OSD DB device from a physical device
+function get_osd_db_device_from_device {
+  device="$1"
+
+  # Use get_lvm_tag_from_device to get the OSD DB device from the device
+  get_lvm_tag_from_device ${device} ceph.db_device
+}
+
+# Helper function get an OSD WAL device from a physical device
+function get_osd_wal_device_from_device {
+  device="$1"
+
+  # Use get_lvm_tag_from_device to get the OSD WAL device from the device
+  get_lvm_tag_from_device ${device} ceph.wal_device
+}
+
+function set_device_class {
+  if [ ! -z "$DEVICE_CLASS" ]; then
+    if [ "x$DEVICE_CLASS" != "x$(get_device_class)" ]; then
+      ceph_cmd_retry --cluster "${CLUSTER}" --name="osd.${OSD_ID}" --keyring="${OSD_KEYRING}" \
+        osd crush rm-device-class "osd.${OSD_ID}"
+      ceph_cmd_retry --cluster "${CLUSTER}" --name="osd.${OSD_ID}" --keyring="${OSD_KEYRING}" \
+        osd crush set-device-class "${DEVICE_CLASS}" "osd.${OSD_ID}"
+    fi
+  fi
+}
+
+function get_device_class {
+  echo $(ceph_cmd_retry --cluster "${CLUSTER}" --name="osd.${OSD_ID}" --keyring="${OSD_KEYRING}" \
+    osd crush get-device-class "osd.${OSD_ID}")
+}

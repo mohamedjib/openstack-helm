@@ -1,6 +1,4 @@
 {{/*
-Copyright 2017 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -32,7 +30,7 @@ spec:
 {{ tuple $envAll "prometheus-mysql-exporter" "create-sql-user" | include "helm-toolkit.snippets.kubernetes_metadata_labels" | indent 8 }}
       annotations:
 {{ tuple $envAll | include "helm-toolkit.snippets.release_uuid" | indent 8 }}
-{{ dict "envAll" $envAll "podName" "prometheus-mysql-exporter" "containerNames" (list "exporter-create-sql-user") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
+{{ dict "envAll" $envAll "podName" "create-sql-user" "containerNames" (list "init" "exporter-create-sql-user") | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
     spec:
       shareProcessNamespace: true
       serviceAccountName: {{ $serviceAccountName }}

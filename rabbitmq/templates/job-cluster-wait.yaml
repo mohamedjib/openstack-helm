@@ -1,6 +1,4 @@
 {{/*
-Copyright 2019 The Openstack-Helm Authors.
-
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -37,7 +35,7 @@ spec:
 {{ tuple $envAll | include "helm-toolkit.snippets.release_uuid" | indent 8 }}
         configmap-bin-hash: {{ tuple "configmap-bin.yaml" . | include "helm-toolkit.utils.hash" }}
         configmap-etc-hash: {{ tuple "configmap-etc.yaml" . | include "helm-toolkit.utils.hash" }}
-{{ dict "envAll" $envAll "podName" "rabbitmq-cluster-wait" "containerNames" (list "rabbitmq-cookie" "rabbitmq-rabbitmq-cluster-wait" ) | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
+{{ dict "envAll" $envAll "podName" "rabbitmq-cluster-wait" "containerNames" (list "init" "rabbitmq-cookie" "rabbitmq-rabbitmq-cluster-wait" ) | include "helm-toolkit.snippets.kubernetes_mandatory_access_control_annotation" | indent 8 }}
     spec:
 {{ dict "envAll" $envAll "application" "cluster_wait" | include "helm-toolkit.snippets.kubernetes_pod_security_context" | indent 6 }}
       serviceAccountName: {{ $serviceAccountName }}
@@ -65,7 +63,7 @@ spec:
               subPath: erlang_cookie
               readOnly: true
       containers:
-        - name: {{.Release.Name}}-rabbitmq-cluster-wait
+        - name: rabbitmq-rabbitmq-cluster-wait
 {{ tuple $envAll "scripted_test" | include "helm-toolkit.snippets.image" | indent 10 }}
 {{ dict "envAll" $envAll "application" "cluster_wait" "container" "rabbitmq_cluster_wait" | include "helm-toolkit.snippets.kubernetes_container_security_context" | indent 10 }}
           env:

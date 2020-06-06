@@ -1,3 +1,4 @@
+---
 network_policy:
   rabbitmq:
     ingress:
@@ -17,9 +18,6 @@ network_policy:
         - podSelector:
             matchLabels:
               application: aodh
-        - podSelector:
-            matchLabels:
-              application: congress
         - podSelector:
             matchLabels:
               application: barbican
@@ -104,3 +102,4 @@ manifests:
     prometheus:
       network_policy_exporter: true
   network_policy: true
+...
