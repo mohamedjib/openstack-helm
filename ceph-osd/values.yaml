@@ -219,6 +219,7 @@ conf:
     # needed partitions for each OSDs.
     osd:
       - data:
+<<<<<<< HEAD
           type: directory
           location: /var/lib/openstack-helm/ceph/osd/osd-one
         journal:
@@ -228,6 +229,16 @@ conf:
       # - data:
       #     type: bluestore
       #     location: /dev/sdb
+=======
+          type: bluestore
+          location: /dev/vdb
+      - data:
+          type: bluestore
+          location: /dev/vdc   
+      - data:
+          type: bluestore
+          location: /dev/vdd            
+>>>>>>> 6ea8048e87c6248a87d2d0eb96a36ffc5339aa53
       # Separate block devices may be used for block.db and/or block.wal
       # Without these values they will be co-located on the data volume
       # Specify the location and size in Gb. It is recommended that the
