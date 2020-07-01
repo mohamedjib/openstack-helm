@@ -19,6 +19,9 @@
 deployment:
   ceph: true
   storage_secrets: true
+  rbd_provisioner: true
+  cephfs_provisioner: false
+  client_secrets: false
 
 images:
   pull_policy: IfNotPresent
@@ -191,6 +194,7 @@ conf:
   ceph:
     global:
       # auth
+      fsid: 1fe64d86-1aa0-4703-8d53-dc80181cffad
       cephx: true
       cephx_require_signatures: false
       cephx_cluster_require_signatures: true
@@ -270,7 +274,7 @@ dependencies:
           service: local_image_registry
 
 bootstrap:
-  enabled: false
+  enabled: true
   script: |
     ceph -s
     function ensure_pool () {
@@ -305,7 +309,7 @@ storageclass:
       imageFormat: "2"
       imageFeatures: layering
   cephfs:
-    provision_storage_class: true
+    provision_storage_class: false
     provisioner: ceph.com/cephfs
     metadata:
       name: cephfs
@@ -330,7 +334,7 @@ endpoints:
       registry:
         node: 5000
   ceph_mon:
-    namespace: null
+    namespace: ceph
     hosts:
       default: ceph-mon
       discovery: ceph-mon-discovery
@@ -354,4 +358,6 @@ manifests:
   service_mon: true
   service_mon_discovery: true
   job_storage_admin_keys: true
+  deployment_cephfs_provisioner: false
+  job_cephfs_client_key: false
 ...
