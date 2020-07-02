@@ -263,11 +263,11 @@ conf:
     crush:
       # NOTE(portdirect): to use RBD devices with Ubuntu 16.04's 4.4.x series
       # kernel this should be set to `hammer`
-      tunables: null
+      tunables: true
     target:
       # NOTE(portdirect): arbitrarily we set the default number of expected OSD's to 5
       # to match the number of nodes in the OSH gate (used only for helm tests).
-      osd: 5
+      osd: 3
       # This is  just for helm tests to proceed the deployment if  we have mentioned % of
       # osds are up and running.
       required_percent_of_osds: 75
@@ -403,6 +403,7 @@ conf:
   ceph:
     global:
       # auth
+      fsid: 1fe64d86-1aa0-4703-8d53-dc80181cffad
       cephx: true
       cephx_require_signatures: false
       cephx_cluster_require_signatures: true
@@ -486,7 +487,7 @@ dependencies:
           service: ceph_mgr
 
 bootstrap:
-  enabled: false
+  enabled: true
   script: |
     ceph -s
     function ensure_pool () {
@@ -545,7 +546,7 @@ endpoints:
       registry:
         node: 5000
   ceph_mon:
-    namespace: null
+    namespace: ceph
     hosts:
       default: ceph-mon
       discovery: ceph-mon-discovery
@@ -585,7 +586,7 @@ manifests:
   deployment_mgr: true
   deployment_checkdns: true
   job_bootstrap: false
-  job_cephfs_client_key: true
+  job_cephfs_client_key: false
   job_image_repo_sync: true
   job_rbd_pool: true
   service_mgr: true
