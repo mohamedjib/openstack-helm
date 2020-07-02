@@ -153,6 +153,7 @@ jobs:
 conf:
   ceph:
     global:
+      fsid: 1fe64d86-1aa0-4703-8d53-dc80181cffad
       # auth
       cephx: true
       cephx_require_signatures: false
@@ -195,6 +196,8 @@ conf:
       # This is just for helm tests to proceed the deployment if we have mentioned % of
       # osds are up and running.
       required_percent_of_osds: 75
+      osd: 3
+      pg_per_osd: 100
 
   storage:
     # NOTE(supamatt): By default use host based buckets for failure domains. Any `failure_domain` defined must
@@ -338,7 +341,7 @@ endpoints:
       registry:
         node: 5000
   ceph_mon:
-    namespace: null
+    namespace: ceph
     hosts:
       default: ceph-mon
       discovery: ceph-mon-discovery
@@ -351,6 +354,8 @@ endpoints:
         default: 3300
 
 manifests:
+  deployment_cephfs_provisioner: false
+  job_cephfs_client_key: false
   configmap_bin: true
   configmap_etc: true
   configmap_test_bin: true
