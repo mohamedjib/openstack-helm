@@ -1,0 +1,41 @@
+endpoints:
+  ceph_mon:
+    namespace: ceph
+network:
+  public: 192.168.0.0/16
+  cluster: 192.168.0.0/16
+deployment:
+  storage_secrets: true
+  ceph: true
+  rbd_provisioner: true
+  cephfs_provisioner: false
+  client_secrets: false
+bootstrap:
+  enabled: true
+conf:
+  ceph:
+    global:
+      fsid: 1fe64d86-1aa0-4703-8d53-dc80181cffad
+  pool:
+    crush:
+      tunables: true
+    target:
+      osd: 3
+      pg_per_osd: 100
+  storage:
+    osd:
+     - data:
+         type: bluestore
+         location: /dev/vdb
+     - data:
+         type: bluestore
+         location: /dev/vdc
+     - data:
+         type: bluestore
+         location: /dev/vdd         
+storageclass:
+  cephfs:
+    provision_storage_class: false
+manifests:
+  deployment_cephfs_provisioner: false
+  job_cephfs_client_key: false
