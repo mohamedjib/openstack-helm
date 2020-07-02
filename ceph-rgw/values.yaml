@@ -453,7 +453,7 @@ dependencies:
           service: ceph_object_store
 
 bootstrap:
-  enabled: false
+  enabled: true
   script: |
     ceph -s
     function ensure_pool () {
