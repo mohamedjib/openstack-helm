@@ -263,7 +263,7 @@ conf:
     crush:
       # NOTE(portdirect): to use RBD devices with Ubuntu 16.04's 4.4.x series
       # kernel this should be set to `hammer`
-      tunables: true
+      tunables: null
     target:
       # NOTE(portdirect): arbitrarily we set the default number of expected OSD's to 5
       # to match the number of nodes in the OSH gate (used only for helm tests).
