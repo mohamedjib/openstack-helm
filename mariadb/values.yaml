@@ -126,7 +126,7 @@ pod:
         default: 10
   replicas:
     server: 3
-    ingress: 2
+    ingress: 3
     error_page: 1
     prometheus_mysql_exporter: 1
   lifecycle:
