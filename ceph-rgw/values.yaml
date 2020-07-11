@@ -591,6 +591,31 @@ endpoints:
       dns:
         default: 53
         protocol: UDP
+network_policy:        
+  ceph:
+    ingress:
+      - from:
+        - podSelector:
+            matchLabels:
+              application: glance
+        - podSelector:
+            matchLabels:
+              application: cinder
+        - podSelector:
+            matchLabels:
+              application: libvirt
+        - podSelector:
+            matchLabels:
+              application: nova
+        - podSelector:
+            matchLabels:
+              application: ceph
+        - podSelector:
+            matchLabels:
+              application: ingress
+        ports:
+        - protocol: TCP
+          port: 8088
 
 manifests:
   configmap_ceph_templates: true
