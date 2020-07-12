@@ -17,7 +17,7 @@
 
 ---
 deployment:
-  ceph: false
+  ceph: true
 
 release_group: null
 
@@ -453,7 +453,7 @@ dependencies:
           service: ceph_object_store
 
 bootstrap:
-  enabled: true
+  enabled: false
   script: |
     ceph -s
     function ensure_pool () {
@@ -482,7 +482,7 @@ endpoints:
         node: 5000
   identity:
     name: keystone
-    namespace: null
+    namespace: openstack
     auth:
       admin:
         region_name: RegionOne
@@ -518,7 +518,7 @@ endpoints:
         internal: 5000
   object_store:
     name: swift
-    namespace: null
+    namespace: openstack
     hosts:
       default: ceph-rgw
       public: radosgw
@@ -563,7 +563,7 @@ endpoints:
         default: 8088
         public: 80
   ceph_mon:
-    namespace: null
+    namespace: ceph
     hosts:
       default: ceph-mon
       discovery: ceph-mon-discovery
@@ -639,5 +639,5 @@ manifests:
   service_ingress_rgw: true
   service_rgw: true
   helm_tests: true
-  network_policy: false
+  network_policy: true
 ...
