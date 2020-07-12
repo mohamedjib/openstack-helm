@@ -840,7 +840,7 @@ conf:
       # - cinder.backup.drivers.swift.SwiftBackupDriver
       # - cinder.backup.drivers.ceph.CephBackupDriver
       # - cinder.backup.drivers.posix.PosixBackupDriver
-      backup_driver: "cinder.backup.drivers.swift.SwiftBackupDriver"
+      backup_driver: "cinder.backup.drivers.ceph.CephBackupDriver"
       # Backup: Ceph RBD options
       backup_ceph_conf: "/etc/ceph/ceph.conf"
       backup_ceph_user: cinderbackup
