@@ -54,14 +54,14 @@ images:
 labels:
   agent:
     dhcp:
-      node_selector_key: openstack-control-plane
-      node_selector_value: enabled
+      node_selector_key: openstack-helm-node-class
+      node_selector_value: primary
     l3:
-      node_selector_key: openstack-control-plane
-      node_selector_value: enabled
+      node_selector_key: openstack-helm-node-class
+      node_selector_value: primary
     metadata:
-      node_selector_key: openstack-control-plane
-      node_selector_value: enabled
+      node_selector_key: openstack-helm-node-class
+      node_selector_value: primary
     l2gw:
       node_selector_key: openstack-control-plane
       node_selector_value: enabled
@@ -107,7 +107,7 @@ network:
   share_namespaces: true
   interface:
     # Tunnel interface will be used for VXLAN tunneling.
-    tunnel: null
+    tunnel: ens3
     # If tunnel is null there is a fallback mechanism to search
     # for interface with routing using tunnel network cidr.
     tunnel_network_cidr: "0/0"
@@ -617,7 +617,7 @@ pod:
             readOnly: true
         volumes:
   replicas:
-    server: 1
+    server: 2
     ironic_agent: 1
   lifecycle:
     upgrades:
@@ -1848,11 +1848,12 @@ conf:
       # networking_ovn.l3.l3_ovn.OVNL3RouterPlugin for OVN
       service_plugins: router
       allow_automatic_l3agent_failover: True
-      l3_ha: True
-      max_l3_agents_per_router: 2
+      l3_ha: False
+      max_l3_agents_per_router: 1
       l3_ha_network_type: vxlan
       network_auto_schedule: True
       router_auto_schedule: True
+      dhcp_agents_per_network: 1
       # (NOTE)portdirect: if unset this is populated dynamically from the value in
       # 'network.backend' to sane defaults.
       interface_driver: null
@@ -1964,7 +1965,7 @@ conf:
         vni_ranges: 1:1000
         vxlan_group: 239.1.1.1
       ml2_type_flat:
-        flat_networks: "*"
+        flat_networks: public
       # If you want to use the external network as a tagged provider network,
       # a range should be specified including the intended VLAN target
       # using ml2_type_vlan.network_vlan_ranges:
@@ -1982,7 +1983,7 @@ conf:
         l2_population: True
         arp_responder: True
       ovs:
-        bridge_mappings: "external:br-ex"
+        bridge_mappings: "public:br-ex"
       securitygroup:
         firewall_driver: neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
     linuxbridge_agent:
