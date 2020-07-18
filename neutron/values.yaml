@@ -1983,7 +1983,7 @@ conf:
         l2_population: True
         arp_responder: True
       ovs:
-        bridge_mappings: "public:br-ex"
+        bridge_mappings: public:br-ex
       securitygroup:
         firewall_driver: neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
     linuxbridge_agent:
