@@ -54,14 +54,14 @@ images:
 labels:
   agent:
     dhcp:
-      node_selector_key: openstack-helm-node-class
-      node_selector_value: primary
+      node_selector_key: openstack-compute-node
+      node_selector_value: enabled
     l3:
-      node_selector_key: openstack-helm-node-class
-      node_selector_value: primary
+      node_selector_key: openstack-compute-node
+      node_selector_value: enabled
     metadata:
-      node_selector_key: openstack-helm-node-class
-      node_selector_value: primary
+      node_selector_key: openstack-compute-node
+      node_selector_value: enabled
     l2gw:
       node_selector_key: openstack-control-plane
       node_selector_value: enabled
