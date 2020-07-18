@@ -27,8 +27,8 @@ labels:
       node_selector_key: openstack-compute-node
       node_selector_value: enabled
   api_metadata:
-    node_selector_key: openstack-control-plane
-    node_selector_value: enabled
+    node_selector_key: openstack-helm-node-class
+    node_selector_value: primary
   conductor:
     node_selector_key: openstack-control-plane
     node_selector_value: enabled
@@ -2483,10 +2483,10 @@ pod:
   replicas:
     api_metadata: 1
     compute_ironic: 1
-    placement: 1
-    osapi: 1
-    conductor: 1
-    consoleauth: 1
+    placement: 2
+    osapi: 2
+    conductor: 2
+    consoleauth: 2
     scheduler: 1
     novncproxy: 1
     spiceproxy: 1
