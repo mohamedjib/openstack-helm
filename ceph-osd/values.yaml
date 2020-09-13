@@ -223,13 +223,13 @@ conf:
     osd:
       - data:
           type: bluestore
-          location: /dev/vdb
+          location: /dev/vda
       - data:
           type: bluestore
-          location: /dev/vdc   
+          location: /dev/vdb   
       - data:
           type: bluestore
-          location: /dev/vdd
+          location: /dev/vdc
       # Separate block devices may be used for block.db and/or block.wal
       # Without these values they will be co-located on the data volume
       # Specify the location and size in Gb. It is recommended that the
